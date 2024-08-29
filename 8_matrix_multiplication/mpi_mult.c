@@ -4,7 +4,7 @@
  * as well as a block of A. Each process gets n/comm_sz
  * rows of A and we use block distribution. In order for all
  * process to get a copy of the entire array x, we will
- * use the MPI_Allgather() function use.
+ * use the MPI_Allgather() function.
  */
 
 #include <stdio.h>
