@@ -4,7 +4,7 @@
  * as well as a block of A. Each process gets n/comm_sz
  * rows of A and we use block distribution. In order for all
  * process to get a copy of the entire array x, we will
- * use the MPI_Allgather() function.
+ * use the MPI_Allgather() function use.
  */
 
 #include <stdio.h>
@@ -64,10 +64,34 @@ void matrix_mult(float* local_A,
 
 }/*matrix_mult*/
 
+
+void get_input( int* m_p,
+		int* n_p,
+		int my_rank ){
+
+	if (my_rank ==0){
+
+		printf("Enter dimensions m and n that are multiple of comm_sz: \n");
+		scanf("%d %d", m_p, n_p);
+
+		MPI_Bcast(m_p, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Bcast(n_p, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+	} else {
+
+		MPI_Bcast(m_p, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Bcast(n_p, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	}
+
+
+}/*get_input*/
+
+
+
 int main(){
 
-	int m = 1024;
-	int n = 2048;
+	int m;
+	int n;
 	
 	int my_rank;
 	int comm_sz;
@@ -83,6 +107,8 @@ int main(){
 
 	MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	
+	get_input( &m, &n, my_rank);
 
 	//Important: we assume m and n are multiples of comm_sz.
 	int local_m = m/comm_sz; 
